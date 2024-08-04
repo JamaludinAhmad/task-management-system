@@ -23,11 +23,11 @@ export class AuthController {
             if (!user) {
                 throw new Error('Invalid Credential');
             }
-            this.authService.login(user);
+            const {access_token} = await this.authService.login(user);
 
             return response.status(HttpStatus.OK).json({
                 status: 200,
-                data: user
+                access_token
             })
         } catch (error) {
             return response.status(HttpStatus.BAD_REQUEST).json({
