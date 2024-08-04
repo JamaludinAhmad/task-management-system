@@ -5,6 +5,7 @@ import { AuthService } from './auth.service';
 import { LoginUserDto } from './dto/login-user.dto';
 import { LocalAuthGuard } from './local-auth.guard';
 import { JwtAuthGuard } from './jwt-auth.guard';
+import { response } from 'express';
 
 @Controller('auth')
 export class AuthController {
@@ -16,20 +17,31 @@ export class AuthController {
     
     @UseGuards(LocalAuthGuard)
     @Post('login')
-    async login(@Body() loginUserDto: LoginUserDto) {
-        const user = await this.authService.validateUser(loginUserDto.username, loginUserDto.password);
-        
-        if (!user) {
-            return 'Invalid credentials';
+    async login(@Body() loginUserDto: LoginUserDto, @Res() response) {
+        try {
+            const user = await this.authService.validateUser(loginUserDto.username, loginUserDto.password);
+            if (!user) {
+                throw new Error('Invalid Credential');
+            }
+            this.authService.login(user);
+
+            return response.status(HttpStatus.OK).json({
+                status: 200,
+                data: user
+            })
+        } catch (error) {
+            return response.status(HttpStatus.BAD_REQUEST).json({
+                message: error.message
+            })
         }
-        return this.authService.login(user);
     }
     
     @Post('register')
     async createUser(@Res() response, @Body() createUserDto: CreateUserDto){
         try {
             const user = await this.authService.register(createUserDto);
-            return response.status(HttpStatus.OK).json({
+            return response.status(HttpStatus.CREATED).json({
+                status: 201,
                 data: user
             })
         } catch (error) {
