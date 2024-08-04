@@ -31,4 +31,12 @@ export class TasksService {
         const task = await this.findOneTaskById(id, project);
         return this.taskRepo.remove(task);
     }
+
+    async updateTask(project: Project, createTaskDto: CreateTaskDto): Promise<Task>{
+        const task = await this.taskRepo.findOne({where : {project}})
+        const {name, description} = createTaskDto;
+        task.name = name;
+        task.description = description;
+        return this.taskRepo.save(task);
+    }
 }
