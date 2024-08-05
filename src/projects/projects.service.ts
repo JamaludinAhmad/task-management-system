@@ -1,4 +1,4 @@
-import { Injectable, Req, UseGuards } from '@nestjs/common';
+import { Injectable, NotFoundException, Req, UseGuards } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Project } from './projects.entity';
@@ -12,11 +12,20 @@ export class ProjectsService {
     ){}
 
     async findOne(id: number): Promise<Project>{
-        return this.projectRepo.findOne({where: {id}})
+        const project = await this.projectRepo.findOne({where: {id}})
+        if(!project){
+            throw new NotFoundException('Project tidak ditemukan', {cause: new Error(), description: "Not found"});
+        }
+        return project;
     }
 
     async findAllProjectByUser(user: User): Promise<Project[]>{
-        return this.projectRepo.find({where: {users: user}})
+        const projects = await this.projectRepo.find({where: {users: user}})
+        if(!projects.length){
+            throw new NotFoundException('Project tidak ditemukan', {cause: new Error(), description: "Not found"});
+        }
+
+        return projects;
     }
 
     async createProject(user: User, createProjectDto: CreateProjectDto): Promise<Project>{
@@ -26,7 +35,7 @@ export class ProjectsService {
     }
 
     async deleteProject(id: number){
-        const project = await this.projectRepo.findOne({where: {id}})
+        const project = await this.findOne(id)
         this.projectRepo.remove(project);
         return 'project deleted succesfully';
     }
