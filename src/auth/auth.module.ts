@@ -1,17 +1,15 @@
 import { Module } from '@nestjs/common';
 import { AuthController } from './auth.controller';
-import { UsersService } from 'src/users/users.service';
-import { User } from 'src/users/users.entity';
+import { UsersService } from '../users/users.service';
+import { User } from '../users/users.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { JwtModule, JwtService } from '@nestjs/jwt';
 import { AuthService } from './auth.service';
 import { JwtStrategy } from './jwt.strategy';
-
-import * as dotenv from 'dotenv';
 import { PassportModule } from '@nestjs/passport';
-import { UsersModule } from 'src/users/users.module';
+import { UsersModule } from '../users/users.module';
 import { LocalStrategy } from './local.strategy';
-dotenv.config();
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [
@@ -20,7 +18,7 @@ dotenv.config();
     UsersModule,
     JwtModule.registerAsync({
       useFactory: () => ({
-        secret: 'hallo'
+        secret: `${process.env.JWT_SECRET}`
       })
     }),
   ],

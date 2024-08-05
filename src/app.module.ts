@@ -11,6 +11,7 @@ import { Project } from './projects/projects.entity';
 import { AuthService } from './auth/auth.service';
 import { AuthModule } from './auth/auth.module';
 import { JwtStrategy } from './auth/jwt.strategy';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports:[
@@ -28,7 +29,9 @@ import { JwtStrategy } from './auth/jwt.strategy';
     ProjectsModule,
     TasksModule,
     AuthModule,
+    ConfigModule.forRoot({isGlobal: true})
   ],
-  controllers: [],
+  providers:[AppService],
+  controllers: [AppController],
 })
 export class AppModule {}
