@@ -2,6 +2,7 @@ import { Body, Controller, Get, HttpStatus, Logger, Param, Post, Req, Res, UseGu
 import { UsersService } from './users.service';
 import { CreateUserDto } from '../auth/dto/users-create.dto';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { response } from 'express';
 
 @Controller('users')
 export class UsersController {
@@ -11,14 +12,24 @@ export class UsersController {
     ){}
 
     @Get(':id')
-    findUserById(@Param('id') id: number){
-        return this.userService.findById(id);
+    findUserById(@Param('id') id: number, @Res() response: any){
+        const user = this.userService.findById(id);
+        return response.status(HttpStatus.OK).json({
+            status: 200,
+            message: 'success',
+            data: user
+        })
     }
 
     @UseGuards(JwtAuthGuard)
     @Get()
-    getCurrentUser(@Req() req){
-        return req.user;
+    getCurrentUser(@Req() req: any, @Res() response: any){        
+        const user = req.user;
+        return response.status(HttpStatus.OK).json({
+            status: 200,
+            message: 'success',
+            data: user
+        })
     }
 
 }

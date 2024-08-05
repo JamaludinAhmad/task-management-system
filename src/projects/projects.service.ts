@@ -42,7 +42,6 @@ export class ProjectsService {
             this.taskService.deleteTask(task.id, project);
         })
         this.projectRepo.remove(project);
-        return 'project deleted succesfully';
     }
 
     async updateProject(createProjectDto : CreateProjectDto, id: number): Promise<Project | undefined>{

@@ -18,41 +18,23 @@ export class AuthController {
     @UseGuards(LocalAuthGuard)
     @Post('login')
     async login(@Body() loginUserDto: LoginUserDto, @Res() response) {
-        try {
-            const user = await this.authService.validateUser(loginUserDto.username, loginUserDto.password);
-            if (!user) {
-                throw new Error('Invalid Credential');
-            }
-            const {access_token} = await this.authService.login(user);
+        const user = await this.authService.validateUser(loginUserDto.username, loginUserDto.password);
+        const {access_token} = await this.authService.login(user);
 
-            return response.status(HttpStatus.OK).json({
-                status: 200,
-                access_token
-            })
-        } catch (error) {
-            return response.status(HttpStatus.BAD_REQUEST).json({
-                message: error.message
-            })
-        }
+        return response.status(HttpStatus.OK).json({
+            statusCode: 200,
+            access_token
+        })
     }
     
     @Post('register')
     async createUser(@Res() response, @Body() createUserDto: CreateUserDto){
-        try {
-            const user = await this.authService.register(createUserDto);
-            return response.status(HttpStatus.CREATED).json({
-                status: 201,
-                data: user
-            })
-        } catch (error) {
-            this.logger.log(
-                `UserController: createUser : ${JSON.stringify(error.message)}`
-            )
-            return response.status(HttpStatus.BAD_REQUEST).json({
-                message: error.message
-            })
-        }
+        const user = await this.authService.register(createUserDto);
+        return response.status(HttpStatus.CREATED).json({
+            statusCode: 201,
+            data: user
+
+        })
     }
-    
 
 }
