@@ -1,14 +1,16 @@
-import { Injectable, NotFoundException, Req, UseGuards } from '@nestjs/common';
+import { ForbiddenException, Injectable, NotFoundException, Req, UseGuards } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Project } from './projects.entity';
 import { CreateProjectDto } from './create-project.dto';
 import { User } from 'src/users/users.entity';
+import { TasksService } from 'src/tasks/tasks.service';
 
 @Injectable()
 export class ProjectsService {
     constructor(
-        @InjectRepository(Project) private projectRepo : Repository<Project>
+        @InjectRepository(Project) private projectRepo : Repository<Project>,
+        private taskService: TasksService
     ){}
 
     async findOne(id: number): Promise<Project>{
@@ -35,7 +37,10 @@ export class ProjectsService {
     }
 
     async deleteProject(id: number){
-        const project = await this.findOne(id)
+        const project = await this.projectRepo.findOne({relations: {tasks: true, users: true}, where : {id}})
+        project.tasks.forEach((task) => {
+            this.taskService.deleteTask(task.id, project);
+        })
         this.projectRepo.remove(project);
         return 'project deleted succesfully';
     }
@@ -46,5 +51,19 @@ export class ProjectsService {
 
         return this.projectRepo.save(project);
 
+    }
+
+    async checkUserInProject(user: any, id: number): Promise<Project | undefined> {
+        const project = (await this.findAllProjectByUser(user));
+        let isValid = false;
+        project.map((key, value) => {
+            console.log(key.id + " " + id);
+            
+            if(key.id == id) isValid = true;
+        });
+        if (!isValid) {
+          throw new ForbiddenException('You are not authorized to perform this action on this project');
+        }
+        return null;
     }
 }

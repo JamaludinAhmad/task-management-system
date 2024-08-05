@@ -13,28 +13,34 @@ export class TasksController {
 
     @Post()
     @UseGuards(JwtAuthGuard)
-    async createTask(@Body() createTaskDto: CreateTaskDto, @Param('projectId') id: number){
+    async createTask(@Body() createTaskDto: CreateTaskDto, @Param('projectId') id: number, @Req() req){
+        await this.projectService.checkUserInProject(req.user, id);
         const project = await this.projectService.findOne(id);
         return this.taskService.createTask(project, createTaskDto);
     }
 
     @Delete(':id')
     @UseGuards(JwtAuthGuard)
-    async deleteTask(@Param('id') id: number, projectId: number){
+    async deleteTask(@Param('id') id: number, @Param('projectId') projectId: number, @Req() req){
+        console.log(projectId);
+        
+        await this.projectService.checkUserInProject(req.user, projectId);
         const project = await this.projectService.findOne(projectId);
         this.taskService.deleteTask(id, project);
     }
 
     @Get()
     @UseGuards(JwtAuthGuard)
-    async getAllProjectTask(@Param('projectId') projectId: number){
+    async getAllProjectTask(@Param('projectId') projectId: number, @Req() req){
+        await this.projectService.checkUserInProject(req.user, projectId);
         const project = await this.projectService.findOne(projectId)
         return this.taskService.findAllTask(project);
     }
 
     @Put(':id')
     @UseGuards(JwtAuthGuard)
-    async updateTask(@Body() createTaskDto: CreateTaskDto, @Param('projectId') projectId: number){
+    async updateTask(@Body() createTaskDto: CreateTaskDto, @Param('projectId') projectId: number, @Req() req){
+        await this.projectService.checkUserInProject(req.user, projectId);
         const project = await this.projectService.findOne(projectId);
         return this.taskService.updateTask(project, createTaskDto);
     }

@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Task } from './tasks.entity';
 import { Repository } from 'typeorm';
@@ -16,8 +16,8 @@ export class TasksService {
     }
 
     async findAllTask(project: Project){
-        const tasks = this.taskRepo.find({where: {project}});
-        if(tasks == null) throw new Error('data tidak ditemukna');
+        const tasks = await this.taskRepo.find({where: {project}});
+        if(tasks == null) throw new NotFoundException('Data tidak ditemukan');
 
         return tasks;
     }
