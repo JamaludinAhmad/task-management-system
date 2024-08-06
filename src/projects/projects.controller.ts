@@ -78,4 +78,19 @@ export class ProjectsController {
             }             
         };
     }
+
+    @Put(':id/invite/:friendId')
+    @UseGuards(JwtAuthGuard)
+    async inviteFriend(@Param('id') id: number, @Param('friendId') friendId: number, @Req() req, @Res() response){
+        const project = await this.projectService.inviteFriendId(friendId, id, req.user);
+
+        return response.status(HttpStatus.CREATED).json({
+            statusCode: 201,
+            message: 'Friend invited to project successfully',
+            data: {
+                project
+            }             
+        });
+
+    }
 }

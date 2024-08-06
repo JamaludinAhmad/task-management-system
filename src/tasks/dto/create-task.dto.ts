@@ -7,6 +7,5 @@ export class CreateTaskDto{
     description: string;
 
     @IsBoolean()
-    @IsNotEmpty()
     isDone: boolean
 }

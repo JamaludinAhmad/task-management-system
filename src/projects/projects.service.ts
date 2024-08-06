@@ -5,12 +5,14 @@ import { Project } from './projects.entity';
 import { CreateProjectDto } from './create-project.dto';
 import { User } from '../users/users.entity';
 import { TasksService } from '../tasks/tasks.service';
+import { UsersService } from '../users/users.service';
 
 @Injectable()
 export class ProjectsService {
     constructor(
         @InjectRepository(Project) private projectRepo : Repository<Project>,
-        private taskService: TasksService
+        private taskService: TasksService,
+        private userServices: UsersService
     ){}
 
     async findOne(id: number, user: any): Promise<Project>{
@@ -54,6 +56,16 @@ export class ProjectsService {
 
         return this.projectRepo.save(project);
 
+    }
+
+    async inviteFriendId(friendId: number, projectId: number, user: any): Promise<void>{
+        const project = await this.projectRepo.findOne({relations: {users: true}, where: {id: projectId}})
+        this.checkUserInProject(user, projectId);
+
+        const friend = await this.userServices.findById(friendId);
+        project.users = [...project.users, friend];
+
+        this.projectRepo.save(project);
     }
 
     async checkUserInProject(user: any, id: number): Promise<Project | undefined> {
