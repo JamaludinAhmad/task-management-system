@@ -12,7 +12,7 @@ describe('AuthController (e2e)', () => {
     let app;
     let token: string;
 
-    beforeEach(async() => {
+    beforeAll(async() => {
         const moduleFixture: TestingModule = await Test.createTestingModule({
             imports: [AuthModule,
                 UsersModule,
@@ -34,5 +34,9 @@ describe('AuthController (e2e)', () => {
         .then((response) => {
             expect(response.body.access_token).toBeDefined();
         })
+    })
+
+    afterAll(async() => {
+        await app.close();
     })
 })
