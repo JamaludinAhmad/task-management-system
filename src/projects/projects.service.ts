@@ -36,12 +36,15 @@ export class ProjectsService {
         return this.projectRepo.save(p);
     }
 
-    async deleteProject(id: number){
+    async deleteProject(id: number): Promise<void>{
         const project = await this.projectRepo.findOne({relations: {tasks: true, users: true}, where : {id}})
-        project.tasks.forEach((task) => {
-            this.taskService.deleteTask(task.id, project);
-        })
-        this.projectRepo.remove(project);
+        
+        if(project.tasks.length > 0){
+            project.tasks.forEach((task) => {
+                this.taskService.deleteTask(task.id, project);
+            })
+        }
+        await this.projectRepo.remove(project);
     }
 
     async updateProject(createProjectDto : CreateProjectDto, id: number): Promise<Project | undefined>{
