@@ -23,6 +23,20 @@ export class ProjectsController {
         });
     }
 
+    @UseGuards(JwtAuthGuard)
+    @Get(':id')
+    async getProjectById(@Req() req: any, @Res() response: any, @Param('id') id: number){
+        const user = req.user;
+        const project = await this.projectService.findOne(id, user);
+
+        return response.status(HttpStatus.OK).json({
+            statusCode: 200,
+            message: 'Fetch data successfully',
+            data: project          
+        });
+    }
+
+
 
     @UseGuards(JwtAuthGuard)
     @Post()

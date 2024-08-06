@@ -15,7 +15,7 @@ export class TasksService {
         return this.taskRepo.findOne({where: {id, project: project}})
     }
 
-    async findAllTask(project: Project){
+    async findAllTask(project: Project): Promise<Task[]>{
         const tasks = await this.taskRepo.find({where: {project}});
         if(tasks == null) throw new NotFoundException('Data tidak ditemukan');
 

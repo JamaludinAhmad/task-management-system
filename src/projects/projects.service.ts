@@ -13,7 +13,8 @@ export class ProjectsService {
         private taskService: TasksService
     ){}
 
-    async findOne(id: number): Promise<Project>{
+    async findOne(id: number, user: any): Promise<Project>{
+        await this.checkUserInProject(user, id);
         const project = await this.projectRepo.findOne({where: {id}})
         if(!project){
             throw new NotFoundException('Project tidak ditemukan', {cause: new Error(), description: "Not found"});
