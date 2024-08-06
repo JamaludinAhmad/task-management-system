@@ -29,12 +29,14 @@ export class TasksService {
 
     async deleteTask(id: number, project: Project): Promise<any>{
         const task = await this.findOneTaskById(id, project);
+        if(task == null) throw new NotFoundException('Data tidak ditemukan');
         return this.taskRepo.remove(task);
     }
 
     async updateTask(project: Project, createTaskDto: CreateTaskDto): Promise<Task>{
         const task = await this.taskRepo.findOne({where : {project}})
-        const {name, description} = createTaskDto;
+        const {name, description, isDone} = createTaskDto;
+        task.isDone = isDone;
         task.name = name;
         task.description = description;
         return this.taskRepo.save(task);
