@@ -34,10 +34,38 @@ Service-Repository design memisahkan logika akses data (repositori) dari busines
 
 1. **Clone the Repository**
 
-   ```bash
-   git clone <repository-url>
-   cd task-management-system
+```bash
+git clone <repository-url>
+cd task-management-system 
+```
+2. **Instal package**
+  ```bash
+  npm install
+  ```
+3. **Configuring database**
+  untuk konfigurasi database, cek file app.module.ts di folder src dan sesuaikan.
+  ```bash
+    TypeOrmModule.forRoot({
+      type: 'mysql', 
+      host: 'localhost',
+      port: 3306,
+      username: 'root',
+      password: '',
+      database: 'task_management_db',
+      synchronize: true,
+      entities: [User, Project, Task]
+    })
+  ```
+4. **Running Locally**
+```bash
+npm run start
+```
+5. **Run Test for e2e**
+``` bash
+npm run test:e2e
+```
 
+    
 
 ## API Documentasi
 Dokumentasi API bisa dilihat di https://documenter.getpostman.com/view/29222401/2sA3rxrZcE
